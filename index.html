@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>报文邮局</title>
+  <meta name="description" content="把网络协议拆开来读。每个数据包都是一封信，里面是真实的字节。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Serif+SC:wght@600;900&display=swap" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="airmail" aria-hidden="true"></div>
+
+  <header class="top">
+    <a class="brand" href="#/arp/normal" aria-label="报文邮局首页">
+      <span id="brand-mark"></span>
+      <span class="brand-t"><b>报文邮局</b><em>PACKET POST · 把协议拆开来读</em></span>
+    </a>
+    <div class="top-actions">
+      <button id="btn-album" class="tool">集邮册 <b id="album-count">0/9</b></button>
+      <button id="btn-theme" class="tool icon" aria-label="切换主题"></button>
+    </div>
+  </header>
+
+  <main class="app">
+    <nav id="nav" class="route" aria-label="协议路线"></nav>
+
+    <section class="desk" aria-label="投递台">
+      <div class="desk-head">
+        <div id="scenarios" class="scenarios" role="tablist" aria-label="场景"></div>
+        <div class="views" role="group" aria-label="视图">
+          <button data-view="map">地图</button>
+          <button data-view="seq">时序</button>
+        </div>
+      </div>
+
+      <div class="stage">
+        <svg id="map" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" role="img" aria-label="网络地图"></svg>
+        <div id="seq" class="seq hide"></div>
+        <div id="quiz" class="quiz" hidden></div>
+      </div>
+
+      <div id="caption" class="caption empty" aria-live="polite"></div>
+
+      <div class="controls">
+        <div class="ctl-main">
+          <button id="btn-reset" class="tool icon" aria-label="回到开头" title="回到开头 (R)"><svg class="ic" viewBox="0 0 22 22" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a7 7 0 1 0 2.300-5.200M4 3v4.500h4.500"/></svg></button>
+          <button id="btn-prev" class="tool icon" aria-label="上一个包" title="上一个包 (←)"><svg class="ic" viewBox="0 0 22 22" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 11H5M10 6l-5 5 5 5"/></svg></button>
+          <button id="btn-play" class="play" title="播放 / 暂停 (空格)"></button>
+          <button id="btn-next" class="tool icon" aria-label="下一个包" title="下一个包 (→)"><svg class="ic" viewBox="0 0 22 22" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11h13M12 6l5 5-5 5"/></svg></button>
+          <button id="speed" class="tool" aria-label="播放速度" title="播放速度">1×</button>
+        </div>
+        <div id="ticks" class="ticks" aria-label="时间轴"></div>
+        <span id="counter" class="counter">0 / 0</span>
+        <div class="ctl-side">
+          <button id="quiz-toggle" class="tool toggle" title="发送前先猜下一步">猜一猜</button>
+          <button id="btn-pcap" class="tool" title="导出当前场景，可用 Wireshark 打开">
+            <svg class="ic" viewBox="0 0 22 22" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 3v11M6.500 10L11 14.500 15.500 10M4 19h14"/></svg>
+            <span>.pcap</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="log" class="log" aria-label="抓包日志"></div>
+    </section>
+
+    <aside class="side" aria-label="详情">
+      <div class="tabs" role="tablist">
+        <button data-tab="story" role="tab">讲解</button>
+        <button data-tab="open" role="tab">拆信</button>
+      </div>
+      <div id="tab-story" class="tab-body"></div>
+      <div id="tab-open" class="tab-body" hidden></div>
+    </aside>
+  </main>
+
+  <dialog id="album" class="album" aria-label="集邮册">
+    <header>
+      <div><h2>集邮册</h2><span class="album-count"></span></div>
+      <button id="album-close" class="tool icon" aria-label="关闭"><svg class="ic" viewBox="0 0 22 22" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 5l12 12M17 5L5 17"/></svg></button>
+    </header>
+    <p class="album-lead">走完一个协议的主线场景，就能得到一枚邮票。邮票上的面值是它的端口号或协议号。</p>
+    <div class="album-grid"></div>
+    <footer><button id="album-reset" class="ghost">清空进度</button></footer>
+  </dialog>
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

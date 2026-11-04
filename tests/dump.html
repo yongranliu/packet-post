@@ -1,0 +1,42 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>dump</title>
+<pre id="out">pending</pre>
+<script type="module">
+  // 把所有场景的所有包（包括每段链路上的版本）导出成 JSON，交给 verify.py 校验
+  import { PROTOCOLS, loadScript } from '../js/protocols/index.js';
+  import { hexOf } from '../js/net/bytes.js';
+  import { pcapParts } from '../js/net/pcap.js';
+  const out = [];
+  try {
+    for (const p of PROTOCOLS) {
+      for (const sc of p.scenarios) {
+        const s = loadScript(p.id, sc.id);
+        for (const n of s.nodes) if (!sc.positions[n]) throw new Error(`no position ${n}`);
+        out.push({
+          key: `${p.id}/${sc.id}`,
+          pcap: pcapParts(s.frames).map((p) => hexOf(p).replaceAll(' ', '')).join(''),
+          steps: s.steps.length,
+          emptySteps: s.steps.map((_, i) => i).filter((i) => !s.frames.some((f) => f.step === i)),
+          outro: !!s.outroText,
+          frames: s.frames.map((f) => ({
+            n: f.n, label: f.label, kind: f.kind, info: f.info, path: f.path, time: f.time, capture: f.capture,
+            lost: f.lost, caption: !!f.caption,
+            usedNodes: [...f.path, ...f.also.flat()],
+            links: Array.from({ length: f.links }, (_, i) => {
+              const a = f.at(i);
+              return {
+                hex: hexOf(a.bytes).replaceAll(' ', ''),
+                layers: a.layers.map((l) => ({ id: l.id, off: l.off, len: l.len, fields: l.fields.map((x) => [x.label, x.abs, x.len]) })),
+              };
+            }),
+          })),
+          positions: Object.keys(sc.positions),
+        });
+      }
+    }
+    document.getElementById('out').textContent = JSON.stringify(out);
+  } catch (e) {
+    document.getElementById('out').textContent = 'ERROR ' + e.stack;
+  }
+</script>
